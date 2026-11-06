@@ -4,28 +4,30 @@ import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
-        Calculator calculator = new Calculator();
+        ArithmeticCalculator<Double> calculator = new ArithmeticCalculator<>();
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
             System.out.print("첫 번째 숫자를 입력하세요: ");
-            int num1 = scanner.nextInt();
+            double num1 = scanner.nextDouble();
 
             System.out.print("사칙연산 기호를 입력하세요: ");
-            char operator = scanner.next().charAt(0);
+            char operatorChar = scanner.next().charAt(0);
 
             System.out.print("두 번째 숫자를 입력하세요: ");
-            int num2 = scanner.nextInt();
+            double num2 = scanner.nextDouble();
 
             try {
-                int result = calculator.calculate(num1, num2, operator);
+                // 입력받은 연산자 기호를 OperatorType으로 변환
+                OperatorType operator = OperatorType.fromSymbol(operatorChar);
+                double result = calculator.calculate(num1, num2, operator);
                 System.out.println("결과: " + result);
             } catch (ArithmeticException | IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
 
-            // 연산 후 저장된 결과 목록 조회 및 가장 먼저 저장된 결과 삭제 흐름
-            System.out.println("가장 먼저 저장된 연산 결과를 삭제하시겠습니까? (remove 입력 시 삭제, inquiry 입력 시 조회)");
+            // 연산 후 저장된 결과 관리 (삭제, 전체 조회, 기준값보다 큰 결과 필터 조회)
+            System.out.println("기능을 선택하세요 (remove: 첫 결과 삭제, inquiry: 전체 조회, filter: 특정 값보다 큰 결과 조회, 그 외: 다음으로)");
             String command = scanner.next();
 
             if (command.equals("remove")) {
@@ -33,6 +35,10 @@ public class App {
                 System.out.println("현재 저장된 연산 결과 목록: " + calculator.getResults());
             } else if (command.equals("inquiry")) {
                 calculator.inquiryResults();
+            } else if (command.equals("filter")) {
+                System.out.print("기준값을 입력하세요: ");
+                double target = scanner.nextDouble();
+                calculator.printResultsGreaterThan(target);
             }
 
             System.out.println("더 계산하시겠습니까? (exit 입력 시 종료)");
